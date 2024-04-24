@@ -20,11 +20,11 @@ def get_all_customers():
         # Write the SQL query to get the information you want
         db_cursor.execute("""
         SELECT
-            a.id,
-            a.name,
-            a.address,
-            a.email,
-            a.password
+            c.id,
+            c.name,
+            c.address,
+            c.email,
+            c.password
         FROM customer a
         """)
 
@@ -47,7 +47,7 @@ def get_all_customers():
 
     return customers
   
-  # Function with a single parameter
+# Function with a single parameter
 def get_single_customer(id):
     with sqlite3.connect("./kennel.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
@@ -57,13 +57,13 @@ def get_single_customer(id):
         # into the SQL statement.
         db_cursor.execute("""
         SELECT
-            a.id,
-            a.name,
-            a.address,
-            a.email,
-            a.password
+            c.id,
+            c.name,
+            c.address,
+            c.email,
+            c.password
         FROM customer a
-        WHERE a.id = ?
+        WHERE c.id = ?
         """, ( id, ))
 
         # Load the single result into memory
@@ -113,3 +113,57 @@ def update_customer(id, new_customer):
             # Found the customer. Update the value.
             CUSTOMERS[index] = new_customer
             break
+        
+def get_customer_by_email(email):
+
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        select
+            c.id,
+            c.name,
+            c.address,
+            c.email,
+            c.password
+        from Customer c
+        WHERE c.email = ?
+        """, ( email, ))
+
+        customers = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            customer = Customer(row['id'], row['name'], row['address'], row['email'] , row['password'])
+            customers.append(customer.__dict__)
+
+    return customers
+
+def get_customer_by_name(name):
+
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        select
+            c.id,
+            c.name,
+            c.address,
+            c.email,
+            c.password
+        from Customer c
+        WHERE c.name = ?
+        """, ( name, ))
+
+        customers = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            customer = Customer(row['id'], row['name'], row['address'], row['email'] , row['password'])
+            customers.append(customer.__dict__)
+
+    return customers
