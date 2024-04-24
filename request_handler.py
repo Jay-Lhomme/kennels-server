@@ -1,6 +1,10 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from views import get_all_animals, get_single_animal, create_animal, delete_animal, update_animal, get_all_locations, create_location, get_single_location, delete_location, update_location, get_all_customers, get_single_customer, create_customer, delete_customer, update_customer, get_all_employees, get_single_employee, create_employee, delete_employee, update_employee
+from views import get_all_animals, get_single_animal, create_animal, delete_animal\
+    , update_animal, get_all_locations, create_location, get_single_location\
+    , delete_location, update_location, get_all_customers, get_single_customer\
+    , create_customer, delete_customer, update_customer, get_all_employees\
+    , get_single_employee, create_employee, delete_employee, update_employee
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -164,55 +168,55 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any PUT request.
 
     def do_PUT(self):
-      self._set_headers(204)
-      content_len = int(self.headers.get('content-length', 0))
-      post_body = self.rfile.read(content_len)
-      post_body = json.loads(post_body)
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
 
-      # Parse the URL
-      (resource, id) = self.parse_url(self.path)
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
 
-      # Delete a single animal from the list
-      if resource == "animals":
-          update_animal(id, post_body)
-          
-      if resource == "locations":
-          update_location(id, post_body)
-          
-      if resource == "customers":
-          update_customer(id, post_body)
-          
-      if resource == "employees":
-          update_employee(id, post_body)
+        # Delete a single animal from the list
+        if resource == "animals":
+            update_animal(id, post_body)
 
-      # Encode the new animal and send in response
-      self.wfile.write("".encode())
-        
+        if resource == "locations":
+            update_location(id, post_body)
+
+        if resource == "customers":
+            update_customer(id, post_body)
+
+        if resource == "employees":
+            update_employee(id, post_body)
+
+        # Encode the new animal and send in response
+        self.wfile.write("".encode())
+
     def do_DELETE(self):
-      # Set a 204 response code
-      self._set_headers(204)
+        # Set a 204 response code
+        self._set_headers(204)
 
-      # Parse the URL
-      (resource, id) = self.parse_url(self.path)
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
 
-      # Delete a single animal from the list
-      if resource == "animals":
-          delete_animal(id)
-          
-      # Delete a single location from the list    
-      if resource == "locations":
-          delete_location(id)
-       
-      # Delete a single customer from the list    
-      if resource == "customers":
-          delete_customer(id)
-      
-      # Delete a single employee from the list    
-      if resource == "employees":
-          delete_employee(id)
+        # Delete a single animal from the list
+        if resource == "animals":
+            delete_animal(id)
 
-      # Encode the new animal and send in response
-      self.wfile.write("".encode())
+        # Delete a single location from the list
+        if resource == "locations":
+            delete_location(id)
+
+        # Delete a single customer from the list
+        if resource == "customers":
+            delete_customer(id)
+
+        # Delete a single employee from the list
+        if resource == "employees":
+            delete_employee(id)
+
+        # Encode the new animal and send in response
+        self.wfile.write("".encode())
 
 
 # This function is not inside the class. It is the starting
