@@ -2,12 +2,8 @@ import sqlite3
 import json
 from models import Customer
 
-CUSTOMERS = [
-    {
-        "id": 1,
-        "name": "Ryan Tanay"
-    }
-]
+CUSTOMERS = [{"id": 1, "name": "Ryan Tanay"}]
+
 
 def get_all_customers():
     # Open a connection to the database
@@ -18,15 +14,17 @@ def get_all_customers():
         db_cursor = conn.cursor()
 
         # Write the SQL query to get the information you want
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         SELECT
             c.id,
             c.name,
             c.address,
             c.email,
             c.password
-        FROM customer a
-        """)
+        FROM customer c
+        """
+        )
 
         # Initialize an empty list to hold all customer representations
         customers = []
@@ -41,12 +39,17 @@ def get_all_customers():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # Customer class above.
-            customer = Customer(row['id'], row['name'], row['address'], row['email'], row['password'])
+            customer = Customer(
+                row["id"], row["name"], row["address"], row["email"], row["password"]
+            )
 
-            customers.append(customer.__dict__) # see the notes below for an explanation on this line of code.
+            customers.append(
+                customer.__dict__
+            )  # see the notes below for an explanation on this line of code.
 
     return customers
-  
+
+
 # Function with a single parameter
 def get_single_customer(id):
     with sqlite3.connect("./kennel.sqlite3") as conn:
@@ -55,25 +58,31 @@ def get_single_customer(id):
 
         # Use a ? parameter to inject a variable's value
         # into the SQL statement.
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         SELECT
             c.id,
             c.name,
             c.address,
             c.email,
             c.password
-        FROM customer a
+        FROM customer c
         WHERE c.id = ?
-        """, ( id, ))
+        """,
+            (id,),
+        )
 
         # Load the single result into memory
         data = db_cursor.fetchone()
 
         # Create an customer instance from the current row
-        customer = Customer(data['id'], data['name'], data['address'], data['email'], data['password'])
+        customer = Customer(
+            data["id"], data["name"], data["address"], data["email"], data["password"]
+        )
 
         return customer.__dict__
-  
+
+
 def create_customer(customer):
     # Get the id value of the last customer in the list
     max_id = CUSTOMERS[-1]["id"]
@@ -89,22 +98,21 @@ def create_customer(customer):
 
     # Return the dictionary with `id` property added
     return customer
-  
+
+
 def delete_customer(id):
-    # Initial -1 value for customer index, in case one isn't found
-    customer_index = -1
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
 
-    # Iterate the CUSTOMERS list, but use enumerate() so that you
-    # can access the index value of each item
-    for index, customer in enumerate(CUSTOMERS):
-        if customer["id"] == id:
-            # Found the customer. Store the current index.
-            customer_index = index
+        db_cursor.execute(
+            """
+        DELETE FROM customer
+        WHERE id = ?
+        """,
+            (id,),
+        )
 
-    # If the customer was found, use pop(int) to remove it from list
-    if customer_index >= 0:
-        CUSTOMERS.pop(customer_index)
-        
+
 def update_customer(id, new_customer):
     # Iterate the CUSTOMERS list, but use enumerate() so that
     # you can access the index value of each item.
@@ -113,7 +121,8 @@ def update_customer(id, new_customer):
             # Found the customer. Update the value.
             CUSTOMERS[index] = new_customer
             break
-        
+
+
 def get_customer_by_email(email):
 
     with sqlite3.connect("./kennel.sqlite3") as conn:
@@ -121,7 +130,8 @@ def get_customer_by_email(email):
         db_cursor = conn.cursor()
 
         # Write the SQL query to get the information you want
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         select
             c.id,
             c.name,
@@ -130,16 +140,21 @@ def get_customer_by_email(email):
             c.password
         from Customer c
         WHERE c.email = ?
-        """, ( email, ))
+        """,
+            (email,),
+        )
 
         customers = []
         dataset = db_cursor.fetchall()
 
         for row in dataset:
-            customer = Customer(row['id'], row['name'], row['address'], row['email'] , row['password'])
+            customer = Customer(
+                row["id"], row["name"], row["address"], row["email"], row["password"]
+            )
             customers.append(customer.__dict__)
 
     return customers
+
 
 def get_customer_by_name(name):
 
@@ -148,7 +163,8 @@ def get_customer_by_name(name):
         db_cursor = conn.cursor()
 
         # Write the SQL query to get the information you want
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         select
             c.id,
             c.name,
@@ -157,13 +173,17 @@ def get_customer_by_name(name):
             c.password
         from Customer c
         WHERE c.name = ?
-        """, ( name, ))
+        """,
+            (name,),
+        )
 
         customers = []
         dataset = db_cursor.fetchall()
 
         for row in dataset:
-            customer = Customer(row['id'], row['name'], row['address'], row['email'] , row['password'])
+            customer = Customer(
+                row["id"], row["name"], row["address"], row["email"], row["password"]
+            )
             customers.append(customer.__dict__)
 
     return customers

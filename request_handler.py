@@ -1,13 +1,33 @@
 import json
 from urllib.parse import urlparse, parse_qs
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from views import get_all_animals, get_single_animal, create_animal, delete_animal\
-    , update_animal, get_animal_by_location, get_animal_by_status, get_all_locations\
-    , create_location, get_single_location, delete_location, update_location\
-    , get_all_customers, get_single_customer, create_customer, delete_customer\
-    , update_customer, get_customer_by_email, get_customer_by_name\
-    , get_all_employees, get_single_employee, create_employee, delete_employee\
-    , update_employee, get_employee_by_location
+from views import (
+    get_all_animals,
+    get_single_animal,
+    create_animal,
+    delete_animal,
+    update_animal,
+    get_animal_by_location,
+    get_animal_by_status,
+    get_all_locations,
+    create_location,
+    get_single_location,
+    delete_location,
+    update_location,
+    get_all_customers,
+    get_single_customer,
+    create_customer,
+    delete_customer,
+    update_customer,
+    get_customer_by_email,
+    get_customer_by_name,
+    get_all_employees,
+    get_single_employee,
+    create_employee,
+    delete_employee,
+    update_employee,
+    get_employee_by_location,
+)
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -19,7 +39,7 @@ class HandleRequests(BaseHTTPRequestHandler):
     def parse_url(self, path):
         """Parse the url into the resource and id"""
         parsed_url = urlparse(path)
-        path_params = parsed_url.path.split('/')  # ['', 'animals', 1]
+        path_params = parsed_url.path.split("/")  # ['', 'animals', 1]
         resource = path_params[1]
 
         if parsed_url.query:
@@ -43,20 +63,19 @@ class HandleRequests(BaseHTTPRequestHandler):
             status (number): the status code to return to the front end
         """
         self.send_response(status)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
 
     # Another method! This supports requests with the OPTIONS verb.
     def do_OPTIONS(self):
-        """Sets the options headers
-        """
+        """Sets the options headers"""
         self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods',
-                         'GET, POST, PUT, DELETE')
-        self.send_header('Access-Control-Allow-Headers',
-                         'X-Requested-With, Content-Type, Accept')
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+        self.send_header(
+            "Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Accept"
+        )
         self.end_headers()
 
     # Here's a method on the class that overrides the parent's method.
@@ -70,8 +89,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         parsed = self.parse_url(self.path)
 
         # If the path does not include a query parameter, continue with the original if block
-        if '?' not in self.path:
-            ( resource, id ) = parsed
+        if "?" not in self.path:
+            (resource, id) = parsed
 
             # It's an if..else statement
             if resource == "animals":
@@ -100,24 +119,24 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = get_all_customers()
 
-        else: # There is a ? in the path, run the query param functions
+        else:  # There is a ? in the path, run the query param functions
             (resource, query) = parsed
 
             # see if the query dictionary has an email key
-            if query.get('email') and resource == 'customers':
-                response = get_customer_by_email(query['email'][0])
-                
-            if query.get('name') and resource == 'customers':
-                response = get_customer_by_name(query['name'][0])
-            
-            if query.get('location_id') and resource == 'animals':
-                response = get_animal_by_location(query['location_id'][0])
-                
-            if query.get('status') and resource == 'animals':
-                response = get_animal_by_status(query['status'][0])
-                
-            if query.get('location_id') and resource == 'locations':
-                response = get_employee_by_location(query['location_id'][0])    
+            if query.get("email") and resource == "customers":
+                response = get_customer_by_email(query["email"][0])
+
+            if query.get("name") and resource == "customers":
+                response = get_customer_by_name(query["name"][0])
+
+            if query.get("location_id") and resource == "animals":
+                response = get_animal_by_location(query["location_id"][0])
+
+            if query.get("status") and resource == "animals":
+                response = get_animal_by_status(query["status"][0])
+
+            if query.get("location_id") and resource == "locations":
+                response = get_employee_by_location(query["location_id"][0])
 
         self.wfile.write(json.dumps(response).encode())
 
@@ -125,7 +144,7 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any POST request.
     def do_POST(self):
         self._set_headers(201)
-        content_len = int(self.headers.get('content-length', 0))
+        content_len = int(self.headers.get("content-length", 0))
         post_body = self.rfile.read(content_len)
 
         # Convert JSON string to a Python dictionary
@@ -186,7 +205,7 @@ class HandleRequests(BaseHTTPRequestHandler):
     # It handles any PUT request.
     def do_PUT(self):
         self._set_headers(204)
-        content_len = int(self.headers.get('content-length', 0))
+        content_len = int(self.headers.get("content-length", 0))
         post_body = self.rfile.read(content_len)
         post_body = json.loads(post_body)
 
@@ -239,9 +258,8 @@ class HandleRequests(BaseHTTPRequestHandler):
 # This function is not inside the class. It is the starting
 # point of this application.
 def main():
-    """Starts the server on port 8088 using the HandleRequests class
-    """
-    host = ''
+    """Starts the server on port 8088 using the HandleRequests class"""
+    host = ""
     port = 8088
     HTTPServer((host, port), HandleRequests).serve_forever()
 
