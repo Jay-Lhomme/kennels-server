@@ -2,15 +2,11 @@ import sqlite3
 import json
 from models import Employee
 
-EMPLOYEES = [
-    {
-        "id": 1,
-        "name": "Jenna Solis"
-    }
-]
+EMPLOYEES = [{"id": 1, "name": "Jenna Solis"}]
+
 
 def get_all_employees():
- # Open a connection to the database
+    # Open a connection to the database
     with sqlite3.connect("./kennel.sqlite3") as conn:
 
         # Just use these. It's a Black Box.
@@ -18,14 +14,16 @@ def get_all_employees():
         db_cursor = conn.cursor()
 
         # Write the SQL query to get the information you want
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         SELECT
             e.id,
             e.name,
             e.address,
             e.location_id
-        FROM employee a
-        """)
+        FROM employee e
+        """
+        )
 
         # Initialize an empty list to hold all employee representations
         employees = []
@@ -40,13 +38,18 @@ def get_all_employees():
             # Note that the database fields are specified in
             # exact order of the parameters defined in the
             # Employee class above.
-            employee = Employee(row['id'], row['name'], row['address'], row['location_id'])
+            employee = Employee(
+                row["id"], row["name"], row["address"], row["location_id"]
+            )
 
-            employees.append(employee.__dict__) # see the notes below for an explanation on this line of code.
+            employees.append(
+                employee.__dict__
+            )  # see the notes below for an explanation on this line of code.
 
     return employees
-  
-  # Function with a single parameter
+
+
+# Function with a single parameter
 def get_single_employee(id):
     with sqlite3.connect("./kennel.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
@@ -54,7 +57,8 @@ def get_single_employee(id):
 
         # Use a ? parameter to inject a variable's value
         # into the SQL statement.
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         SELECT
             e.id,
             e.name,
@@ -62,15 +66,20 @@ def get_single_employee(id):
             e.location_id
         FROM employee e
         WHERE e.id = ?
-        """, ( id, ))
+        """,
+            (id,),
+        )
 
         # Load the single result into memory
         data = db_cursor.fetchone()
 
         # Create an employee instance from the current row
-        employee = Employee(data['id'], data['name'], data['address'], data['location_id'])
+        employee = Employee(
+            data["id"], data["name"], data["address"], data["location_id"]
+        )
 
         return employee.__dict__
+
 
 def create_employee(employee):
     # Get the id value of the last employee in the list
@@ -87,22 +96,21 @@ def create_employee(employee):
 
     # Return the dictionary with `id` property added
     return employee
-  
+
+
 def delete_employee(id):
-    # Initial -1 value for employee index, in case one isn't found
-    employee_index = -1
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
 
-    # Iterate the EMPLOYEES list, but use enumerate() so that you
-    # can access the index value of each item
-    for index, employee in enumerate(EMPLOYEES):
-        if employee["id"] == id:
-            # Found the employees. Store the current index.
-            employee_index = index
+        db_cursor.execute(
+            """
+        DELETE FROM employee
+        WHERE id = ?
+        """,
+            (id,),
+        )
 
-    # If the employees was found, use pop(int) to remove it from list
-    if employee_index >= 0:
-        EMPLOYEES.pop(employee_index)
-        
+
 def update_employee(id, new_employee):
     # Iterate the EMPLOYEES list, but use enumerate() so that
     # you can access the index value of each item.
@@ -111,7 +119,8 @@ def update_employee(id, new_employee):
             # Found the employee. Update the value.
             EMPLOYEES[index] = new_employee
             break
-        
+
+
 def get_employee_by_location(location_id):
 
     with sqlite3.connect("./kennel.sqlite3") as conn:
@@ -119,7 +128,8 @@ def get_employee_by_location(location_id):
         db_cursor = conn.cursor()
 
         # Write the SQL query to get the information you want
-        db_cursor.execute("""
+        db_cursor.execute(
+            """
         select
             e.id,
             e.name,
@@ -127,13 +137,17 @@ def get_employee_by_location(location_id):
             e.location_id
         FROM employee e
         WHERE e.location_id = ?
-        """, ( location_id, ))
+        """,
+            (location_id,),
+        )
 
         employees = []
         dataset = db_cursor.fetchall()
 
         for row in dataset:
-            employee = Employee(row['id'], row['name'], row['address'], row['location_id'])
+            employee = Employee(
+                row["id"], row["name"], row["address"], row["location_id"]
+            )
             employees.append(employee.__dict__)
 
     return employees
