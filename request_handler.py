@@ -221,6 +221,21 @@ class HandleRequests(BaseHTTPRequestHandler):
             success = update_animal(id, post_body)
         # rest of the elif's
 
+        if resource == "locations":
+            # will return either True or False from `update_location`
+            success = update_location(id, post_body)
+        # rest of the elif's
+
+        if resource == "customers":
+            # will return either True or False from `update_customer`
+            success = update_customer(id, post_body)
+        # rest of the elif's
+
+        if resource == "employees":
+            # will return either True or False from `update_employee`
+            success = update_employee(id, post_body)
+        # rest of the elif's
+
         # handle the value of success
         if success:
             self._set_headers(204)
