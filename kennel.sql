@@ -100,3 +100,98 @@ WHERE a.id = 2
 
 INSERT INTO `Animal` VALUES (null, "Daps", "Kennel", "Boxer", 2, 2);
 INSERT INTO `Employee` VALUES (null, "Leah Hoefling", "200 Success Way", 2)
+
+SELECT
+    a.id,
+    a.name,
+    a.breed,
+    a.status,
+    a.location_id,
+    a.customer_id,
+    l.name location_name,
+    l.address location_address
+FROM Animal a
+JOIN Location l
+    ON l.id = a.location_id
+
+SELECT
+    a.id,
+    a.name,
+    a.breed,
+    a.status,
+    a.location_id,
+    a.customer_id,
+    l.name location_name,
+    l.address location_address,
+    c.name customer_name,
+    c.address customer_address,
+    c.email customer_email
+    
+FROM Animal a
+JOIN Location l, Customer c
+    ON l.id = a.location_id AND c.id = a.customer_id
+
+SELECT
+    e.id,
+    e.name,
+    e.address,
+    e.location_id,
+    l.name location_name
+    
+FROM employee e
+JOIN Location l
+    ON l.id = e.location_id
+
+
+SELECT
+    l.id,
+    l.name,
+    l.address,
+    e.name,
+    e.address,
+    e.location_id,
+    a.name,
+    a.breed,
+    a.status,
+    a.location_id,
+    a.customer_id
+    
+FROM Location l
+JOIN Employee e, Animal a
+    ON l.id = e.location_id AND a.location_id
+
+SELECT
+  l.id,
+  l.name,
+  l.address,
+  e.name employee_name,
+  e.address employee_address,
+  e.location_id employee_location_id,
+  a.name animal_name,
+  a.breed animal_breed,
+  a.status animal_status,
+  a.location_id animal_location_id,
+  a.customer_id animal_customer_id
+  
+FROM Location l
+JOIN Employee e 
+  ON l.id = e.location_id
+JOIN Animal a
+  ON l.id = a.location_id
+
+SELECT
+    l.id,
+    l.name,
+    l.address,
+    e.name employee_name,
+    e.address employee_address,
+    e.location_id employee_location_id,
+    a.name animal_name,
+    a.breed animal_breed,
+    a.status animal_status,
+    a.location_id animal_location_id,
+    a.customer_id animal_customer_id
+    
+FROM Location l
+JOIN Employee e, Animal a
+    ON l.id = e.location_id AND l.id = a.location_id
