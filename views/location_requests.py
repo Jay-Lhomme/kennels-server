@@ -1,6 +1,8 @@
 import sqlite3
 import json
 from models import Location
+from models import Animal
+from models import Employee
 
 LOCATIONS = [
     {"id": 1, "name": "Nashville North", "address": "8422 Johnson Pike"},
@@ -18,12 +20,23 @@ def get_all_locations():
 
         # Write the SQL query to get the information you want
         db_cursor.execute(
-            """
-        SELECT
+            """      
+          SELECT
             l.id,
             l.name,
-            l.address
-        FROM location l
+            l.address,
+            e.name employee_name,
+            e.address employee_address,
+            e.location_id employee_location_id,
+            a.name animal_name,
+            a.breed animal_breed,
+            a.status animal_status,
+            a.location_id animal_location_id,
+            a.customer_id animal_customer_id
+            
+        FROM Location l
+        JOIN Employee e, Animal a
+            ON l.id = e.location_id AND l.id = a.location_id
         """
         )
 
@@ -36,11 +49,36 @@ def get_all_locations():
         # Iterate list of data returned from database
         for row in dataset:
 
-            # Create an location instance from the current row.
-            # Note that the database fields are specified in
-            # exact order of the parameters defined in the
-            # Location class above.
+            # Create a Location instance from the current row
             location = Location(row["id"], row["name"], row["address"])
+
+            # Create a Employee instance from the current row
+            employee = Employee(row["id"], row["employee_name"],
+                                row["employee_address"], row["employee_location_id"])
+
+            # Create a Animal instance from the current row
+            animal = Animal(row["id"],
+                            row["animal_name"],
+                            row["animal_breed"],
+                            row["animal_status"],
+                            row["animal_location_id"],
+                            row["animal_customer_id"])
+
+            # Create a dictionary representation of the employee without the address
+            employee__dict__ = {
+                "name": employee.name,
+                "address": employee.address
+            }
+            location.employee = employee__dict__
+
+            # Create a dictionary representation of the animal without the address
+            animal__dict__ = {
+                "name": animal.name,
+                "breed": animal.breed,
+                "status": animal.status,
+                "customer_id": animal.customer_id
+            }
+            location.animal = animal__dict__
 
             locations.append(
                 location.__dict__
@@ -59,11 +97,22 @@ def get_single_location(id):
         # into the SQL statement.
         db_cursor.execute(
             """
-        SELECT
+          SELECT
             l.id,
             l.name,
-            l.address
-        FROM location l
+            l.address,
+            e.name employee_name,
+            e.address employee_address,
+            e.location_id employee_location_id,
+            a.name animal_name,
+            a.breed animal_breed,
+            a.status animal_status,
+            a.location_id animal_location_id,
+            a.customer_id animal_customer_id
+            
+        FROM Location l
+        JOIN Employee e, Animal a
+            ON l.id = e.location_id AND l.id = a.location_id
         WHERE l.id = ?
         """,
             (id,),
@@ -74,6 +123,36 @@ def get_single_location(id):
 
         # Create an location instance from the current row
         location = Location(data["id"], data["name"], data["address"])
+
+        # Create a Employee instance from the current row
+        employee = Employee(data["id"],
+                            data["employee_name"],
+                            data["employee_address"],
+                            data["employee_location_id"])
+
+        # Create a Animal instance from the current data
+        animal = Animal(data["id"],
+                        data["animal_name"],
+                        data["animal_breed"],
+                        data["animal_status"],
+                        data["animal_location_id"],
+                        data["animal_customer_id"])
+
+        # Create a dictionary representation of the employee without the address
+        employee__dict__ = {
+            "name": employee.name,
+            "address": employee.address
+        }
+        location.employee = employee__dict__
+
+        # Create a dictionary representation of the animal without the address
+        animal__dict__ = {
+            "name": animal.name,
+            "breed": animal.breed,
+            "status": animal.status,
+            "customer_id": animal.customer_id
+        }
+        location.animal = animal__dict__
 
         return location.__dict__
 

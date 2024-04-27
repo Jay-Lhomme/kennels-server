@@ -1,6 +1,8 @@
 import sqlite3
 import json
-from models import Animal
+from models.animal import Animal
+from models.location import Location
+from models.customer import Customer
 
 ANIMALS = [
     {
@@ -47,9 +49,17 @@ def get_all_animals():
             a.breed,
             a.status,
             a.location_id,
-            a.customer_id
-        FROM animal a
-        """
+            a.customer_id,
+            l.name location_name,
+            l.address location_address,
+            c.name customer_name,
+            c.address customer_address,
+            c.email customer_email
+            
+        FROM Animal a
+        JOIN Location l, Customer c
+             ON l.id = a.location_id AND c.id = a.customer_id
+            """
         )
 
         # Initialize an empty list to hold all animal representations
@@ -59,12 +69,10 @@ def get_all_animals():
         dataset = db_cursor.fetchall()
 
         # Iterate list of data returned from database
+
         for row in dataset:
 
-            # Create an animal instance from the current row.
-            # Note that the database fields are specified in
-            # exact order of the parameters defined in the
-            # Animal class above.
+            # Create an animal instance from the current row
             animal = Animal(
                 row["id"],
                 row["name"],
@@ -74,9 +82,30 @@ def get_all_animals():
                 row["customer_id"],
             )
 
-            animals.append(
-                animal.__dict__
-            )  # see the notes below for an explanation on this line of code.
+            # Create a Location instance from the current row
+            location = Location(
+                row["id"], row["location_name"], row["location_address"]
+            )
+            customer = Customer(
+                row["id"], row["customer_name"], row["customer_address"], row["customer_email"])
+
+            # Add the dictionary representation of the location to the animal
+            location__dict__ = {
+                "name": location.name,
+                "address": location.address,
+            }
+            animal.location = location__dict__
+
+            # Create a dictionary representation of the customer without the password
+            customer__dict__ = {
+                "name": customer.name,
+                "address": customer.address,
+                "email": customer.email
+            }
+            animal.customer = customer__dict__
+
+            # Add the dictionary representation of the animal to the list
+            animals.append(animal.__dict__)
 
     return animals
 
@@ -116,7 +145,7 @@ def get_single_animal(id):
             data["customer_id"],
         )
 
-        return animal.__dict__
+    return animal.__dict__
 
 
 def create_animal(animal):
